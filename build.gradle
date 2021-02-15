@@ -50,6 +50,7 @@ dependencies {
     // limit who can access api
     implementation "io.ktor:ktor-auth:$ktor_version"
 
+    // gson
     implementation "io.ktor:ktor-gson:$ktor_version"
 
     // mongodb + kotlin
