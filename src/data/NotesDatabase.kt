@@ -33,3 +33,12 @@ suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boole
 suspend fun getNotesForUser(email: String): List<Note> {
     return notesCollection.find(Note::owners contains email).toList()
 }
+
+suspend fun saveNote(note: Note): Boolean {
+    val noteExists = notesCollection.findOneById(note.id) != null
+    return if (noteExists) {
+        notesCollection.updateOneById(note.id, note).wasAcknowledged() // update existing note by passing the id
+    } else {
+        notesCollection.insertOne(note).wasAcknowledged()
+    }
+}
