@@ -2,6 +2,7 @@ package com.parkchanwoo
 
 import com.parkchanwoo.data.collections.User
 import com.parkchanwoo.data.registerUser
+import com.parkchanwoo.routes.loginRoute
 import com.parkchanwoo.routes.registerRoute
 import io.ktor.application.*
 import io.ktor.features.*
@@ -26,7 +27,9 @@ fun Application.module(testing: Boolean = false) {
 
     // define url endpoints where clients can connect to. an essential feature
     install(Routing) {
+        // install the following routes (add each endpoint here!)
         registerRoute()
+        loginRoute()
     }
 
     // negotiating content type that is transferred through server. must know how to respond to a received request e.g. json

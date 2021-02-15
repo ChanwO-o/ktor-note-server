@@ -23,3 +23,8 @@ suspend fun checkIfUserExists(email: String): Boolean {
 //    return usersCollection.findOne("{email: $email}") != null // not very readable; try below
     return usersCollection.findOne(User::email eq email) != null
 }
+
+suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
+    val actualPassword = usersCollection.findOne(User::email eq email)?.password ?: return false // user doesn't exist
+    return actualPassword == passwordToCheck
+}
