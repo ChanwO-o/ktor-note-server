@@ -1,10 +1,12 @@
 package com.parkchanwoo
 
+import com.parkchanwoo.data.checkPasswordForEmail
 import com.parkchanwoo.data.collections.User
 import com.parkchanwoo.data.registerUser
 import com.parkchanwoo.routes.loginRoute
 import com.parkchanwoo.routes.registerRoute
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.features.*
 import io.ktor.gson.*
 import io.ktor.response.*
@@ -40,15 +42,23 @@ fun Application.module(testing: Boolean = false) {
             setPrettyPrinting()
         }
     }
-
-    // insert test user into local mongodb
-//    CoroutineScope(Dispatchers.IO).launch {
-//        registerUser(
-//            User(
-//                "abc@abc.com",
-//                "123456"
-//            )
-//        )
-//    }
+    install(Authentication) {
+        configureAuth()
+    }
 }
 
+// extension function of Authentication.Configuration, so that we can call it above in install(Authentication)
+private fun Authentication.Configuration.configureAuth() {
+    // how we authenticate users
+    basic {
+        realm = "Ye Notes" // server title
+        validate { credentials ->
+            val email = credentials.name
+            val password = credentials.password
+            if (checkPasswordForEmail(email, password)) {
+                // UserIdPrincipal: a type to keep track of who's auth or not. attached to request later on
+                UserIdPrincipal(email)
+            } else null
+        }
+    }
+}
