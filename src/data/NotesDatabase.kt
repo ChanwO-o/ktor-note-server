@@ -3,6 +3,7 @@ package com.parkchanwoo.data
 import com.parkchanwoo.data.collections.Note
 import com.parkchanwoo.data.collections.User
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 private val client = KMongo.createClient().coroutine // specify how to access db; in our case, use coroutine for all operations
@@ -15,4 +16,10 @@ private val notesCollection = database.getCollection<Note>()
 // register new user to db. coroutines must be suspend functions
 suspend fun registerUser(user: User): Boolean {
     return usersCollection.insertOne(user).wasAcknowledged()
+}
+
+suspend fun checkIfUserExists(email: String): Boolean {
+    // search for user with email. null if none found
+//    return usersCollection.findOne("{email: $email}") != null // not very readable; try below
+    return usersCollection.findOne(User::email eq email) != null
 }

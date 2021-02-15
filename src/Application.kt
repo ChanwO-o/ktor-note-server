@@ -2,6 +2,7 @@ package com.parkchanwoo
 
 import com.parkchanwoo.data.collections.User
 import com.parkchanwoo.data.registerUser
+import com.parkchanwoo.routes.registerRoute
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
@@ -24,7 +25,9 @@ fun Application.module(testing: Boolean = false) {
     install(CallLogging)
 
     // define url endpoints where clients can connect to. an essential feature
-    install(Routing)
+    install(Routing) {
+        registerRoute()
+    }
 
     // negotiating content type that is transferred through server. must know how to respond to a received request e.g. json
     // negotiator will tell which kind of content our server will respond with
@@ -36,13 +39,13 @@ fun Application.module(testing: Boolean = false) {
     }
 
     // insert test user into local mongodb
-    CoroutineScope(Dispatchers.IO).launch {
-        registerUser(
-            User(
-                "abc@abc.com",
-                "123456"
-            )
-        )
-    }
+//    CoroutineScope(Dispatchers.IO).launch {
+//        registerUser(
+//            User(
+//                "abc@abc.com",
+//                "123456"
+//            )
+//        )
+//    }
 }
 
