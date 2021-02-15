@@ -4,6 +4,7 @@ import com.parkchanwoo.data.checkPasswordForEmail
 import com.parkchanwoo.data.collections.User
 import com.parkchanwoo.data.registerUser
 import com.parkchanwoo.routes.loginRoute
+import com.parkchanwoo.routes.noteRoutes
 import com.parkchanwoo.routes.registerRoute
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -27,13 +28,6 @@ fun Application.module(testing: Boolean = false) {
     // log all our http requests that come to server and responses. e.g. adding a note will add info about the note on request
     install(CallLogging)
 
-    // define url endpoints where clients can connect to. an essential feature
-    install(Routing) {
-        // install the following routes (add each endpoint here!)
-        registerRoute()
-        loginRoute()
-    }
-
     // negotiating content type that is transferred through server. must know how to respond to a received request e.g. json
     // negotiator will tell which kind of content our server will respond with
     install(ContentNegotiation) {
@@ -45,11 +39,20 @@ fun Application.module(testing: Boolean = false) {
     install(Authentication) {
         configureAuth()
     }
+
+    // define url endpoints where clients can connect to. an essential feature
+    // MUST setup routes after setting up authentication (some routes require authentication)
+    install(Routing) {
+        // install the following routes (add each endpoint here!)
+        registerRoute()
+        loginRoute()
+        noteRoutes()
+    }
 }
 
 // extension function of Authentication.Configuration, so that we can call it above in install(Authentication)
 private fun Authentication.Configuration.configureAuth() {
-    // how we authenticate users
+    // how we authenticate users. basic: not secure method, use oauth if you want secure auth
     basic {
         realm = "Ye Notes" // server title
         validate { credentials ->

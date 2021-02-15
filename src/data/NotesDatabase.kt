@@ -2,6 +2,7 @@ package com.parkchanwoo.data
 
 import com.parkchanwoo.data.collections.Note
 import com.parkchanwoo.data.collections.User
+import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
@@ -27,4 +28,8 @@ suspend fun checkIfUserExists(email: String): Boolean {
 suspend fun checkPasswordForEmail(email: String, passwordToCheck: String): Boolean {
     val actualPassword = usersCollection.findOne(User::email eq email)?.password ?: return false // user doesn't exist
     return actualPassword == passwordToCheck
+}
+
+suspend fun getNotesForUser(email: String): List<Note> {
+    return notesCollection.find(Note::owners contains email).toList()
 }
