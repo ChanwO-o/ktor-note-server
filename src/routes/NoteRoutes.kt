@@ -1,7 +1,9 @@
 package com.parkchanwoo.routes
 
 import com.parkchanwoo.data.collections.Note
+import com.parkchanwoo.data.deleteNoteForUser
 import com.parkchanwoo.data.getNotesForUser
+import com.parkchanwoo.data.requests.DeleteNoteRequest
 import com.parkchanwoo.data.saveNote
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -19,10 +21,29 @@ fun Route.noteRoutes() {
         authenticate {
             // get request for notes
             get {
-                val email = call.principal<UserIdPrincipal>()!!.name // not-not: we can be sure that a principal is attached
+                val email = call.principal<UserIdPrincipal>()!!.name // not-not: we can be sure that a principal is attached (not null)
 
                 val notes = getNotesForUser(email)
                 call.respond(OK, notes)
+            }
+        }
+    }
+
+    route("/deleteNote") {
+        authenticate {
+            post {
+                val email = call.principal<UserIdPrincipal>()!!.name
+                val request = try {
+                    call.receive<DeleteNoteRequest>()
+                } catch (e: ContentTransformationException) {
+                    call.respond(BadRequest)
+                    return@post
+                }
+                if (deleteNoteForUser(email, request.id)) {
+                    call.respond(OK)
+                } else {
+                    call.respond(Conflict)
+                }
             }
         }
     }
